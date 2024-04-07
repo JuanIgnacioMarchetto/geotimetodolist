@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -29,6 +31,20 @@ function App() {
       }
     );
   }, []);
+
+  useEffect(() => {
+    if (currentLocation) {
+      const map = L.map('map').setView([currentLocation.lat, currentLocation.lng], 12);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+        maxZoom: 18,
+      }).addTo(map);
+
+      const userMarker = L.marker([currentLocation.lat, currentLocation.lng]).addTo(map);
+      userMarker.bindPopup('You are here').openPopup();
+    }
+  }, [currentLocation]);
 
   const handleInputChange = (event) => {
     setNewTask(event.target.value);
